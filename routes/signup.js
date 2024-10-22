@@ -15,9 +15,9 @@ router.post("/", async (req, res) => {
   }
 
   try {
-    // Verificar si el nombre de usuario ya existe
-    const user = new User();
-    const exists = await user.usernameExists(username);
+    // Verificar si el usuario ya existe
+    const exists = await User.usernameExist(username);
+
     if (exists) {
       return res.status(400).json(
         jsonResponse(400, {
