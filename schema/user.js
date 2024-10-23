@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const { generateAccessToken } = require("../auth/generateTokens");
+const {
+  generateAccessToken,
+  generateRefreshToken,
+} = require("../auth/generateTokens");
+const Token = require("../schema/token");
+const getUserInfo = require("../lib/getUserInfo");
 
 const UserSchema = new mongoose.Schema({
   id: { type: Object },
@@ -37,8 +42,17 @@ UserSchema.methods.comparePassword = async function (password, hash) {
 };
 
 UserSchema.methods.createAccessToken = function () {
-  return generateAccessToken();
+  return generateAccessToken(getUserInfo(this));
 };
-UserSchema.methods.createRefreshToken = function () {};
+
+UserSchema.methods.createRefreshToken = async function () {
+  const refreshToken = generateRefreshToken(getUserInfo(this));
+  try {
+    await new Token({ token: refreshToken }).save();
+    return refreshToken;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 module.exports = mongoose.model("User", UserSchema);
