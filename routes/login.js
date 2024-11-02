@@ -14,7 +14,7 @@ router.post("/", async (req, res) => {
     );
   }
 
-  const foundUser = await user.findOne({ username }); // Renombrado aquí
+  const foundUser = await user.findOne({ username });
 
   if (foundUser) {
     const correctPassword = await foundUser.comparePassword(
